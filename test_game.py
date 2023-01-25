@@ -64,8 +64,8 @@ def draw_lines(img, lines, color=[0,255,255], thickness=3):
                     if not found_copy:
                         # 직선의 기울기들이 다르더라도 20%이내라면 같은 직선
                         # 보다 차이나면 다른직선
-                        if abs(other_ms*1.2) > abs(m) > abs(other_ms*0.8):
-                            if abs(final_lanes_copy[other_ms][0][1]*1.2) > abs(b) > abs(final_lanes_copy[other_ms][0][1]*0.8):
+                        if abs(other_ms*1.15) > abs(m) > abs(other_ms*0.85):
+                            if abs(final_lanes_copy[other_ms][0][1]*1.15) > abs(b) > abs(final_lanes_copy[other_ms][0][1]*0.85):
                                 final_lanes[other_ms].append([m,b,line])
                                 found_copy = True
                                 break
@@ -139,8 +139,17 @@ def process_img(image):
     m2 = 0
  
     # 차선을 인식하고 얻은 직선의 방정식을 화면에 표시
-    try:
-        l1, l2, m1, m2 = draw_lines(original_image, lines)
+    try:    
+        mm1=0
+        mm2 =0
+        for i in range(6):
+            l1, l2, m1, m2 = draw_lines(original_image, lines)
+            mm1 += m1
+            mm2 += m2
+
+        m1 = mm1/6
+        m2 = mm2/6
+        
         cv2.line(original_image, (l1[0], l1[1]), (l1[2], l1[3]), [0,255,0], 30)
         cv2.line(original_image, (l2[0], l2[1]), (l2[2], l2[3]), [0,255,0], 30)
  
@@ -203,6 +212,8 @@ while(True):
  
  
     # 차선의 기울기가 동시에 양이거나 음일경우 차선이 치우져졌음을 뜻하므로 키보드 조작
+
+    
     if m1 < 0 and m2 < 0:
         right()
     elif m1 > 0 and m2 > 0:
